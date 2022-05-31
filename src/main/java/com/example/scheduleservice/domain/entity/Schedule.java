@@ -20,7 +20,7 @@ public class Schedule {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "date_hour")
+    @Column(name = "date_time")
     private LocalDateTime dateTime;
 
     @Column(name = "creation_date")
