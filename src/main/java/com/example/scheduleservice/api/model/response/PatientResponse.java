@@ -21,4 +21,6 @@ public class PatientResponse {
     private String email;
 
     private String document;
+
+
 }

@@ -3,6 +3,7 @@ package com.example.scheduleservice.domain.service;
 import com.example.scheduleservice.domain.entity.Patient;
 import com.example.scheduleservice.domain.repository.PatientRepository;
 import com.example.scheduleservice.exception.BusinessException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,18 +20,10 @@ public class PatientService {
 
 
     public Patient save(Patient patient) {
-        boolean existDocument = false;
-
         Optional<Patient> patientByDocument = repository.findByDocument(patient.getDocument());
         if (patientByDocument.isPresent()) {
-            if (!patientByDocument.get().getId().equals(patient.getId())) {
-                existDocument = true;
-            }
+            throw new BusinessException("Patient already registered!");
         }
-        if (existDocument) {
-            throw new BusinessException("Document already registered.");
-        }
-
         return repository.save(patient);
     }
 
@@ -41,14 +34,22 @@ public class PatientService {
 
 
     public Patient update(Long id, Patient patient) {
-        Optional<Patient> optionalPatient = repository.findById(id);
-        if (optionalPatient.isEmpty()) {
-            throw new BusinessException("Patient is not registered.");
+        boolean document = false;
+
+        Optional<Patient> patientOptional = repository.findById(id);
+        if (patientOptional.isEmpty()) {
+            throw new BusinessException("Patient is not found");
+        }
+        if (!patientOptional.get().getDocument().equals(patient.getDocument())) {
+            document = true;
+        }
+        if (document) {
+            throw new BusinessException("the document cannot be changed");
         }
 
-        patient.setId(id);
-
-        return repository.save(patient);
+        Patient patientUpdate = patientOptional.get();
+        BeanUtils.copyProperties(patient, patientUpdate,"id");
+        return repository.save(patientUpdate);
     }
 
 

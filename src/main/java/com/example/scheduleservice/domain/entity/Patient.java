@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -29,6 +30,8 @@ public class Patient {
     @Column(name = "document")
     private String document;
 
+    @OneToMany(mappedBy = "patient")
+    private List<Schedule> schedules = new ArrayList<>();
 
 
 

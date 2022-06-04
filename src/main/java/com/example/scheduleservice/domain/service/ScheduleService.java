@@ -18,37 +18,38 @@ import java.util.Optional;
 public class ScheduleService {
 
     @Autowired
-    private ScheduleRepository repository;
+    private ScheduleRepository scheduleRepository;
 
     @Autowired
     private PatientService patientService;
 
 
     public List<Schedule> findAll() {
-        return repository.findAll();
+        return scheduleRepository.findAll();
     }
 
     public Optional<Schedule> findById(Long id) {
-        return repository.findById(id);
+        return scheduleRepository.findById(id);
     }
 
-    public Schedule save(Schedule schedule) {
-        Optional<Patient> patientOptional = patientService.findById(schedule.getPatient().getId());
 
-        if (patientOptional.isEmpty()) {
+
+    public Schedule save(Schedule schedule) {
+
+        Optional<Patient> patient = patientService.findById(schedule.getPatient().getId());
+        if (patient.isEmpty()) {
             throw new BusinessException("Patient is not found");
         }
 
-        Optional<Schedule> optionalDateTime = repository.findByDateTime(schedule.getDateTime());
+        Optional<Schedule> optionalDateTime = scheduleRepository.findByDateTime(schedule.getDateTime());
 
         if (optionalDateTime.isPresent()) {
             throw new BusinessException("There is already an appointment for this time.");
         }
+        schedule.setCreateDate(LocalDateTime.now());
+        schedule.setPatient(patient.get());
 
-        schedule.setPatient(patientOptional.get());
-        schedule.setCreationDate(LocalDateTime.now());
-
-        return repository.save(schedule);
+        return scheduleRepository.save(schedule);
     }
 
 

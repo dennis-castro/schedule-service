@@ -2,6 +2,7 @@ package com.example.scheduleservice.domain.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -23,11 +24,12 @@ public class Schedule {
     @Column(name = "date_time")
     private LocalDateTime dateTime;
 
-    @Column(name = "creation_date")
-    private LocalDateTime creationDate;
+    @Column(name = "create_date")
+    private LocalDateTime createDate;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "patient_fk")
+    @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @JoinColumn(name = "id_patient")
     private Patient patient;
 
 
